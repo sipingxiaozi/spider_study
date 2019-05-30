@@ -7,16 +7,15 @@ class ReadConfig(object):
 
     def __init__(self, path=None):
         self.cf = configparser.ConfigParser()
-
         if(path):
             filepath = path
         else:
             root_dir = os.path.dirname(os.path.abspath('.'))
             filepath = root_dir + "/config/config.ini"
             # print(filepath)
-        try:
+        if(os.path.exists(filepath)):
             self.cf.read(filepath)
-        except FileNotFoundError:
+        else:
             print("File Not Found")
             pass
 

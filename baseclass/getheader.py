@@ -10,10 +10,9 @@ class GetHeader(object):
     def __init__(self, path=None, cookies=None):
         self.readconfig = ReadConfig(path)
         self.__cookies = cookies
+        self.__header = {}
 
     def cal_header(self):
-        # ip_port = self.readconfig.get_value('Request-Header', 'ip_port')
-        # proxies = {"http": "http://" + ip_port, "https": "https://" + ip_port}
         auth = self.xdaili_proxy_auth()
 
         accept_lan = self.readconfig.get_value('Request-Header', 'accept_lan')
@@ -23,7 +22,6 @@ class GetHeader(object):
 
         ua = UserAgent()
         cookie = self.__cookies
-        self.__header = {}
 
         if(cookie):
             self.__header = {'User-Agent': ua.chrome, 'Accept-Language': accept_lan,
@@ -36,8 +34,7 @@ class GetHeader(object):
                               'Accept': accept_info, 'Proxy-Authorization': auth}
         return self.__header
 
-
-# use xundaili service
+# use xdaili service
     def xdaili_proxy_auth(self):
         timestamp = str(int(time.time()))
         orderno = self.readconfig.get_value('Request-Header', 'orderno')
@@ -48,6 +45,11 @@ class GetHeader(object):
         auth = "sign=" + sign + "&" + "orderno=" + orderno + "&" + "timestamp=" + timestamp
         # print(auth)
         return auth
+
+    def proxy(self):
+        ip_port = self.readconfig.get_value('Request-Header', 'ip_port')
+        proxies = {"http": "http://" + ip_port, "https": "https://" + ip_port}
+        return proxies
 
 
     def get_header(self):

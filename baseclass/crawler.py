@@ -6,11 +6,12 @@ from baseclass.handlemysql import HandleMysql
 
 class Crawler(metaclass=abc.ABCMeta):
 
-    def __init__(self, url, cookie, thread_num=1):
+    def __init__(self, url, cookie=None, thread_num=1):
         self.__url = url
         self.__header = GetHeader(cookies=cookie).get_header()
-        self.__thread_num = thread_num
-        self.__db = HandleMysql()
+        self.proxy = GetHeader(cookies=cookie).proxy()
+        self.pool = HandleMysql(thread_num)
+        self.cnt = 0
 
     def get_url(self):
         return self.__url
@@ -23,13 +24,21 @@ class Crawler(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractclassmethod
+    def row_handler(self):
+        pass
+
+    @abc.abstractclassmethod
+    def request(self):
+        pass
+
+    @abc.abstractclassmethod
     def crawl(self):
         pass
 
     @abc.abstractclassmethod
-    def save(self):
+    def clean(self):
         pass
 
     @abc.abstractclassmethod
-    def close(self):
+    def save(self):
         pass
