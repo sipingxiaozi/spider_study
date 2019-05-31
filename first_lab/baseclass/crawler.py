@@ -1,15 +1,14 @@
 # -*- coding:utf-8 -*-
 
 import abc
-from baseclass.getheader import GetHeader
-from baseclass.handlemysql import HandleMysql
+from first_lab.baseclass.handlemysql import HandleMysql
 
 class Crawler(metaclass=abc.ABCMeta):
 
     def __init__(self, url, cookie=None, thread_num=1):
         self.__url = url
-        self.__header = GetHeader(cookies=cookie).get_header()
-        self.proxy = GetHeader(cookies=cookie).proxy()
+        # self.__header = GetHeader(cookies=cookie).get_header()
+        # self.proxy = GetHeader(cookies=cookie).proxy()
         self.pool = HandleMysql(thread_num)
         self.cnt = 0
 

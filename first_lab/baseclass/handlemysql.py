@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from baseclass.readconfig import ReadConfig
-import pymysql
+from first_lab.baseclass.readconfig import ReadConfig
 import pymysqlpool
 
 class HandleMysql(object):
