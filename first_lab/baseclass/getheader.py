@@ -20,28 +20,28 @@ class GetHeader(object):
         connection = self.readconfig.get_value('Request-Header', 'connection')
         accept_code = self.readconfig.get_value('Request-Header', 'accept_code')
         cache_control = self.readconfig.get_value('Request-Header', 'Cache-control')
-        if_none_match = self.readconfig.get_value('Request-Header', 'If-None-Match')
+        # if_none_match = self.readconfig.get_value('Request-Header', 'If-None-Match')
         if_modified_since = self.readconfig.get_value('Request-Header', 'If-Modified-Since')
         referer = self.readconfig.get_value('Request-Header', 'Referer')
 
 
-        ua = UserAgent(verify_ssl=False)
-        # user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'
+        #ua = UserAgent(verify_ssl=False)
+        user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'
         cookie = self.__cookies
 
         if(cookie):
-            self.__header = {'User-Agent': ua.random, 'Accept-Language': accept_lan,
+            self.__header = {'User-Agent': user_agent, 'Accept-Language': accept_lan,
                               'Accept-Encoding': accept_code, 'Connection': connection,
                               'Accept': accept_info, 'Proxy-Authorization': auth,
                               'Cookie': cookie, 'Referer': referer,
-                             'Cache-contro': cache_control, 'If-None-Match': if_none_match,
+                             'Cache-contro': cache_control,
                              'If-Modified-Since': if_modified_since}
         else:
-            self.__header = {'User-Agent': ua.random, 'Accept-Language': accept_lan,
+            self.__header = {'User-Agent': user_agent, 'Accept-Language': accept_lan,
                               'Accept-Encoding': accept_code, 'Connection': connection,
                               'Accept': accept_info, 'Proxy-Authorization': auth,
                              'Referer': referer,
-                             'Cache-contro': cache_control, 'If-None-Match': if_none_match,
+                             'Cache-contro': cache_control,
                              'If-Modified-Since': if_modified_since}
         return self.__header
 

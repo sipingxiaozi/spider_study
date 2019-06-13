@@ -10,13 +10,21 @@ import re
 import time
 import random
 from first_lab.baseclass.getheader import GetHeader
+import http.cookiejar
 
 special_key = ['SEW-传动设备(苏州)有限公司杭州分公司', '中外运-敦豪国际航空快件有限公司浙江分公司']
 timeout = 3
-retry_times = 3
+retry_times = 2
 
+cookie0 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544983; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544998657%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22ccf33f5e09a7ec8685cf81d40de1afdf%22%7D'
+cookie1 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544839; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544861552%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22bbd581960791e96a67feb6966bde8484%22%7D'
+cookie2 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544783; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544793754%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%2256141213b5defaa82a909a6f5f68db8a%22%7D'
+cookie3 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544742; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544754290%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22f01db54b3dc9c3df654e6bf3c765bcad%22%7D'
+cookie4 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544693; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544714393%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22d194ffe0e09194e5ea53a637554a44f7%22%7D'
+cookie5 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544566; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544580248%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22164ee30874d60967587039b4063b708a%22%7D'
+cookie6 = r'zg_did=%7B%22did%22%3A%20%2216abaaded904f5-0d2283d62d5d1-366f7e03-13c680-16abaaded91832%22%7D; _uab_collina=155791012279488903991127; acw_tc=73e72d9515579101228961194e2a342daa5297cabc862aabdbdb976321; Hm_lvt_3456bee468c83cc63fb5147f119f1075=1557973486,1558429174,1558512138,1558581160; QCCSESSID=adf5hjvegoudc0rjiqhq3b8cs5; CNZZDATA1254842228=1472431469-1557908174-https%253A%252F%252Fsp0.baidu.com%252F%7C1559540083; hasShow=1; Hm_lpvt_3456bee468c83cc63fb5147f119f1075=1559544443; zg_de1d1a35bfa24ce29bbf2c7eb17e6c4f=%7B%22sid%22%3A%201559544433913%2C%22updated%22%3A%201559544464641%2C%22info%22%3A%201559195139568%2C%22superProperty%22%3A%20%22%7B%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22%22%2C%22cuid%22%3A%20%22164ee30874d60967587039b4063b708a%22%7D'
 
-
+cookie_pool = [cookie0, cookie1, cookie2, cookie3, cookie4, cookie5, cookie6]
 
 
 class QccCrawler(Crawler):
@@ -45,7 +53,7 @@ class QccCrawler(Crawler):
             if len(company_map) > 0:
                 value = list()
                 for k in company_map.keys():
-                    # print(k + "  :  " + str(company_map[k]))
+                    print(k + "  :  " + str(company_map[k]))
                     value.append(company_map[k])
                 value.append(line)
                 data = (int(value[0]), int(value[1]), int(value[2]), value[3], value[4], value[5],
@@ -83,24 +91,31 @@ class QccCrawler(Crawler):
             try:
                 print(url)
                 self.cnt += 1
-                header = GetHeader().get_header()
+                header = GetHeader(cookies=random.choice(cookie_pool)).get_header()
                 # print(header)
                 time.sleep(random.randint(3, 5))
                 res = session.get(url, headers=header, proxies=proxies,  timeout=timeout,
                                   verify=False, allow_redirects=False)
+                # cookie = res.cookies.get_dict()
+                # print(str(cookie))
                 print(str(self.cnt))
 
                 status_code = res.status_code
                 # print("status_code:  " + str(status_code))
                 if(status_code == 200):
-                    # print(res.text)
-                    retry_flag = False
-                    try:
-                        bs_obj = BeautifulSoup(res.text, 'html.parser')
-                    except AttributeError as e:
-                        print(e)
+                    if(res.text.find('index_verify') == -1):
+                        # print(res.text)
+                        retry_flag = False
+                        try:
+                            bs_obj = BeautifulSoup(res.text, 'html.parser')
+                        except AttributeError as e:
+                            print(e)
+                            pass
+                        return bs_obj
+                    else:
+                        print(res.text)
+                        retry_times -= 1
                         pass
-                    return bs_obj
                 else:
                     retry_times -= 1
                     if(status_code == 301 or status_code == 302):
@@ -110,13 +125,14 @@ class QccCrawler(Crawler):
                         retry_flag = False
                     else:
                         pass
-            except Exception:
+            except Exception as e:
+                print(e)
                 retry_times -= 1
 
     def crawl(self, url1, url2, proxies):
         company_url = self.get_company_name(url1, url2, proxies, retry_times)
         if(company_url != ''):
-            company_map = self.get_company_info(company_url, proxies, retry_times)
+            company_map = self.get_company_info(company_url, proxies, retry_times+1)
             return company_map
         else:
             return {}

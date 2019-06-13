@@ -21,7 +21,6 @@ class HandleMysql(object):
         # self.__cur = None
 
     def conn_mysql(self, timeout, retry_num):
-
         con = self.pool.get_connection(timeout, retry_num)
         return con
 
@@ -36,10 +35,33 @@ class HandleMysql(object):
             con.close()
 
 
-    # def search(self, sql):
-    #     self.conn_mysql()
-    #     self.__cur.execute(sql)
-    #     return self.__cur.fetchall()
+
+    def search(self, table_name):
+        con = self.conn_mysql(timeout=30, retry_num=5)
+        try:
+            cur = con.cursor()
+            sql = "select * from " + table_name
+            cur.execute(sql)
+            res = cur.fetchall()
+            return res
+        except:
+            pass
+        finally:
+            con.close()
+
+    def search_single_col(self, table_name, col_name):
+
+        con = self.conn_mysql(timeout=30, retry_num=5)
+        try:
+            cur = con.cursor()
+            sql = "select distinct " + col_name + " from " + table_name
+            cur.execute(sql)
+            res = cur.fetchall()
+            return res
+        except:
+            pass
+        finally:
+            con.close()
 
     # def close(self):
     #     self.__cur.close()

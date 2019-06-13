@@ -21,8 +21,10 @@ if __name__ == '__main__':
     lists = []
     num = 0
     for i in list:
-        if(num <= 10 and '公司' in i):
+        if(num < 10 and '公司' in i):
             num += 1
+            # time.sleep(5)
+            lists.append(i)
             test.row_handler(i)
 
 
